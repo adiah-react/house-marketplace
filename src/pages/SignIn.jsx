@@ -4,6 +4,7 @@ import visibilityIcon from "../assets/svg/visibilityIcon.svg";
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { auth } from "../firebase.config";
 
 const SignIn = () => {
@@ -39,7 +40,7 @@ const SignIn = () => {
         navigate("/");
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Invalid User Credentials");
     }
   };
 

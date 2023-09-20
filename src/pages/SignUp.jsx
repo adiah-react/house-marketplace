@@ -8,6 +8,7 @@ import { auth, db } from "../firebase.config";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -56,7 +57,7 @@ const SignUp = () => {
 
       navigate("/");
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong with registration");
     }
   };
 
