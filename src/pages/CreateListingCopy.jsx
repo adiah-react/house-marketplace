@@ -1,4 +1,4 @@
-import { onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import {
   getDownloadURL,
@@ -11,11 +11,11 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import Spinner from "../components/Spinner";
-import { auth, db } from "../firebase.config";
+import { db } from "../firebase.config";
 
-const CreateListing = () => {
+function CreateListing() {
   // eslint-disable-next-line
-  const [geolocationEnabled, setGeoLocationEnabled] = useState(false);
+  const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     type: "rent",
@@ -49,6 +49,7 @@ const CreateListing = () => {
     longitude,
   } = formData;
 
+  const auth = getAuth();
   const navigate = useNavigate();
   const isMounted = useRef(true);
 
@@ -74,7 +75,7 @@ const CreateListing = () => {
 
     setLoading(true);
 
-    if (discountedPrice > regularPrice) {
+    if (discountedPrice >= regularPrice) {
       setLoading(false);
       toast.error("Discounted price needs to be less than regular price");
       return;
@@ -91,7 +92,7 @@ const CreateListing = () => {
 
     if (geolocationEnabled) {
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=INPUT_KEY_HERE`
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=INSERT_KEY_HERE`
       );
 
       const data = await response.json();
@@ -112,10 +113,9 @@ const CreateListing = () => {
     } else {
       geolocation.lat = latitude;
       geolocation.lng = longitude;
-      location = address;
     }
 
-    // Store image in firebas
+    // Store image in firebase
     const storeImage = async (image) => {
       return new Promise((resolve, reject) => {
         const storage = getStorage();
@@ -124,6 +124,7 @@ const CreateListing = () => {
         const storageRef = ref(storage, "images/" + fileName);
 
         const uploadTask = uploadBytesResumable(storageRef, image);
+
         uploadTask.on(
           "state_changed",
           (snapshot) => {
@@ -155,7 +156,7 @@ const CreateListing = () => {
       });
     };
 
-    const imageUrls = await Promise.all(
+    const imgUrls = await Promise.all(
       [...images].map((image) => storeImage(image))
     ).catch(() => {
       setLoading(false);
@@ -165,18 +166,17 @@ const CreateListing = () => {
 
     const formDataCopy = {
       ...formData,
-      imageUrls,
+      imgUrls,
       geolocation,
       timestamp: serverTimestamp(),
     };
 
+    formDataCopy.location = address;
     delete formDataCopy.images;
     delete formDataCopy.address;
-    location && (formDataCopy.location = location);
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
 
     const docRef = await addDoc(collection(db, "listings"), formDataCopy);
-
     setLoading(false);
     toast.success("Listing saved");
     navigate(`/category/${formDataCopy.type}/${docRef.id}`);
@@ -188,7 +188,6 @@ const CreateListing = () => {
     if (e.target.value === "true") {
       boolean = true;
     }
-
     if (e.target.value === "false") {
       boolean = false;
     }
@@ -213,6 +212,7 @@ const CreateListing = () => {
   if (loading) {
     return <Spinner />;
   }
+
   return (
     <div className="profile">
       <header>
@@ -449,6 +449,6 @@ const CreateListing = () => {
       </main>
     </div>
   );
-};
+}
 
 export default CreateListing;
