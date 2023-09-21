@@ -5,6 +5,7 @@ import visibilityIcon from "../assets/svg/visibilityIcon.svg";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import OAuth from "../components/OAuth";
 import { auth } from "../firebase.config";
 
 const SignIn = () => {
@@ -91,7 +92,7 @@ const SignIn = () => {
           </div>
         </form>
 
-        {/* Google OAuth */}
+        <OAuth />
 
         <Link to="/sign-up" className="registerLink">
           Sign Up Instead
