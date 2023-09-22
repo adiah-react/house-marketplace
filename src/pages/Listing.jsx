@@ -7,6 +7,15 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import { auth, db } from "../firebase.config";
 
+import { A11y, Navigation, Pagination, Scrollbar } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+
+// import "swiper/css";
+// import "swiper/css/navigation";
+// import "swiper/css/pagination";
+// import "swiper/css/scrollbar";
+import "swiper/css/bundle";
+
 const Listing = () => {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -36,7 +45,47 @@ const Listing = () => {
 
   return (
     <main>
-      {/* Slider */}
+      {/* <Swiper slidesPerView={1} pagination={{ clickable: true }}>
+        {listing.imageUrls.map((url, index) => (
+          <SwiperSlide key={index}>
+            <div
+              style={{
+                background: `url(${listing.imageUrls[index]}) center no-repeat`,
+                backgroundSize: "cover",
+              }}
+              className="swiperSlideDiv"
+            ></div>
+          </SwiperSlide>
+        ))}
+      </Swiper> */}
+      <Swiper
+        // install Swiper modules
+        modules={[Navigation, Pagination, Scrollbar, A11y]}
+        // spaceBetween={50}
+        slidesPerView={1}
+        navigation
+        pagination={{ clickable: true }}
+        scrollbar={{ draggable: true }}
+        onSwiper={(swiper) => console.log(swiper)}
+        onSlideChange={() => console.log("slide change")}
+      >
+        {/* <SwiperSlide>Slide 1</SwiperSlide> */}
+        {/* <SwiperSlide>Slide 2</SwiperSlide> */}
+        {listing.imageUrls?.map((url, index) => {
+          const sliderStyles = {
+            backgroundImage: decodeURI(`url(https://i.imgur.com/RlLzAQr.png)`),
+            backgroundSize: "cover",
+          };
+          return (
+            <SwiperSlide key={index}>
+              <div className="swiperSlideDiv" style={sliderStyles}></div>
+              {/* <div className="swiperSlideDiv">
+                <img src={url} alt="" />
+              </div> */}
+            </SwiperSlide>
+          );
+        })}
+      </Swiper>
 
       <div
         className="shareIconDiv"
