@@ -67,6 +67,7 @@ ListingItem.propTypes = {
   listing: PropTypes.object,
   id: PropTypes.string,
   onDelete: PropTypes.func,
+  onEdit: PropTypes.func,
 };
 
 export default ListingItem;
